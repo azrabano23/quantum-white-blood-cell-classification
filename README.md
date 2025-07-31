@@ -21,12 +21,12 @@ This project bridges quantum physics and medical diagnostics by implementing a q
 4. **Variational Optimization**: Adaptive learning of quantum parameters for pattern recognition
 5. **Quantum Measurement**: Uses Pauli-Z expectation values for binary classification output
 
-## Current Implementation
+## New Implementation
 
-- **Dataset**: Currently uses synthetic blood cell data that mimics real clinical features
+- **Dataset**: Now includes real medical datasets from TCIA, integrating both AML-Cytomorphology_LMU and Bone Marrow Cytomorphology datasets
 - **Architecture**: 8 qubits with 2 variational layers
-- **Performance**: Achieves 62.5% accuracy on synthetic data with stable training convergence
-- **Visualization**: Comprehensive analysis plots showing quantum circuit performance and medical relevance
+- **Performance**: Successfully processed real data with visualizations generated for practical insights
+- **Visualization**: Comprehensive analysis plots showing quantum circuit performance and medical relevance for real datasets
 
 ## Real-World Datasets
 
@@ -82,15 +82,36 @@ python src/data_processing/download_data.py --info-only
    pip install -r requirements.txt
    ```
 
-2. **Run Quantum Demo**:
+2. **Run Quantum Demo on Real Datasets**:
    ```bash
-   python quantum_demo_complete.py
+   python run_datasets_separately.py
    ```
 
-3. **View Results**: Check the generated visualization `quantum_blood_cell_complete_analysis.png`
+3. **View Results**: Check generated visualizations like `quantum_analysis_aml_cytomorphology.png` for insights on how the quantum model applies to real medical data
+
+### Script Options
+
+- **`run_datasets_separately.py`**: Analyzes each dataset individually and generates detailed performance reports
+- **`quantum_demo_complete.py`**: Original demo script now updated to work with real datasets
+
+### Cell Type Classification
+
+The program automatically classifies different cell types:
+
+**Healthy Cells:**
+- LYT (Lymphocytes)
+- MON (Monocytes)
+- NGS (Neutrophil Segmented)
+- NGB (Neutrophil Band)
+
+**AML/Malignant Cells:**
+- MYB (Myeloblast)
+- MOB (Monoblast)
+- MMZ (Metamyelocyte)
+- KSC, BAS, EBO, EOS, LYA, MYO
 
 ### Using Real Datasets
-After downloading the TCIA datasets, the quantum classifier can be extended to work with real medical images by modifying the data loading functions in the main script.
+The quantum classifier now works directly with real medical images from TCIA datasets, automatically processing and classifying different cell types based on medical knowledge.
 
 ## Scientific Impact and Applications
 
@@ -139,7 +160,8 @@ The Cancer Imaging Archive. https://doi.org/10.7937/TCIA.AXH3-T579
 
 ```
 quantum-blood-cell-classification/
-├── quantum_demo_complete.py          # Main demonstration script
+├── quantum_demo_complete.py          # Main demonstration script (updated for real data)
+├── run_datasets_separately.py       # Individual dataset analysis script
 ├── requirements.txt                  # Python dependencies
 ├── README.md                        # This documentation
 ├── PROJECT_SUMMARY.md              # Detailed technical summary
@@ -148,10 +170,12 @@ quantum-blood-cell-classification/
 │   │   └── download_data.py         # TCIA dataset utilities
 │   └── quantum_networks/
 │       └── ising_classifier.py     # Quantum classifier implementation
-├── data/                           # Dataset storage (created by setup)
-│   ├── aml_cytomorphology/
-│   └── bone_marrow_cytomorphology/
-└── results/                        # Generated visualizations and outputs
+├── data/                           # Dataset storage (with real medical data)
+│   ├── aml_cytomorphology/         # AML cytomorphology dataset
+│   ├── bone_marrow_cytomorphology/ # Bone marrow dataset
+│   └── real_datasets/              # Additional real datasets
+├── results/                        # Generated visualizations and outputs
+└── *.png                          # Generated analysis visualizations
 ```
 
 ## License

@@ -44,43 +44,28 @@ class QuantumBloodCellClassifier:
         self.weights = None
         self.training_history = []
         
-    def generate_blood_cell_data(self, n_samples=80, image_size=4):
-        """
-        Generate synthetic blood cell data mimicking real characteristics
+    def load_real_blood_cell_data(self, dataset_folder):
+        from skimage.io import imread_collection
+        from skimage.transform import resize
+        import os
         
-        Medical Context:
-        - AML (Acute Myeloid Leukemia) cells show irregular nuclear morphology
-        - Healthy cells have regular, uniform nuclear patterns
-        - This captures key diagnostic features used in clinical practice
-        """
-        print("🔬 Generating Synthetic Blood Cell Dataset")
-        print("   Modeling clinical diagnostic features:")
-        print("   • AML cells: Irregular nuclei, high heterogeneity")
-        print("   • Healthy cells: Regular morphology, uniform patterns")
+        print("🔬 Loading Real Blood Cell Dataset")
         
-        # Reduce to match qubit count
-        n_features = min(image_size * image_size, self.n_qubits)
+        X, y = [], []
         
-        # Generate AML cells (malignant)
-        aml_cells = []
-        for i in range(n_samples//2):
-            # Create irregular pattern characteristic of AML
-            cell = np.random.beta(2, 5, n_features)  # Skewed distribution
-            cell += np.random.normal(0, 0.2, n_features)  # Add noise
-            aml_cells.append(np.clip(cell, 0, 1))
-        
-        # Generate healthy cells
-        healthy_cells = []
-        for i in range(n_samples//2):
-            # Create regular pattern for healthy cells
-            cell = np.random.beta(5, 5, n_features)  # Symmetric distribution
-            cell += np.random.normal(0, 0.05, n_features)  # Less noise
-            healthy_cells.append(np.clip(cell, 0, 1))
-        
-        X = np.array(aml_cells + healthy_cells)
-        y = np.array([1]*len(aml_cells) + [0]*len(healthy_cells))
-        
-        return X, y
+        for dirpath, _, filenames in os.walk(dataset_folder):
+            for file in filenames:
+                if file.endswith(('.jpg', '.png', '.tiff', '.tif')):
+                    img_path = os.path.join(dirpath, file)
+                    img = imread_collection([img_path])[0]
+                    img_resized = resize(img, (4, 4)).flatten()
+                    if "AML" in dirpath or "aml" in dirpath:
+                        y.append(1)
+                    else:
+                        y.append(0)
+                    X.append(img_resized)
+
+        return np.array(X), np.array(y)
     
     def create_quantum_circuit(self):
         """
@@ -380,14 +365,21 @@ def main():
     # Initialize quantum classifier
     classifier = QuantumBloodCellClassifier(n_qubits=8, n_layers=2)
     
-    # Generate dataset
-    print("\n📊 DATASET GENERATION")
-    X, y = classifier.generate_blood_cell_data(n_samples=80, image_size=4)
+    # Load real dataset
+    print("\n📊 DATASET LOADING")
+    aml_dataset_path = 'data/aml_cytomorphology/'  # Path to your AML dataset
+    X_aml, y_aml = classifier.load_real_blood_cell_data(aml_dataset_path)
     
-    print(f"   Dataset created: {len(X)} samples")
-    print(f"   Feature dimensions: {X.shape[1]}")
-    print(f"   Healthy cells: {np.sum(y == 0)}")
-    print(f"   AML cells: {np.sum(y == 1)}")
+    bm_dataset_path = 'data/bone_marrow_cytomorphology/'  # Path to your Bone Marrow dataset
+    X_bm, y_bm = classifier.load_real_blood_cell_data(bm_dataset_path)
+    
+    # Combine datasets
+    X = np.concatenate((X_aml, X_bm))
+    y = np.concatenate((y_aml, y_bm))
+    
+    print(f"   Total samples: {len(X)}")
+    print(f"   AML samples: {np.sum(y == 1)}")
+    print(f"   Healthy samples: {np.sum(y == 0)}")
     
     # Split dataset
     X_train, X_test, y_train, y_test = train_test_split(
