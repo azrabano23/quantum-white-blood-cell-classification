@@ -176,3 +176,38 @@ python3 quantum_circuit_visualization.py
     - Error handling for robustness with real medical data
 
 This technical implementation successfully demonstrated that quantum simulated annealing can be applied to real-world medical image classification, establishing a foundation for future quantum advantage research in healthcare applications.
+
+---
+
+## Results
+
+| Method | Configuration | Test accuracy | Notes |
+|---|---|---|---|
+| Quantum Ising / VQC | 8–16 qubits, StronglyEntanglingLayers, `default.qubit` simulator | **~52%** | At/near the 50% chance line for the binary AML-vs-control split |
+| Equilibrium Propagation | energy-based net, two-phase training | comparable | Same difficulty regime; see `equilibrium_propagation_classifier.py` |
+| Random baseline | — | ~50% | Reference |
+
+**How to read this honestly:** ~52% on a binary task is *essentially chance*. This is a **feasibility study**, and the result is a useful negative one: at the scales accessible on a laptop simulator (a handful of qubits, images downsampled to 16×16), neither the variational quantum circuit nor the energy-based model extracts the cell morphology that a CNN can. That is the honest finding, and it motivates the larger, properly-baselined study in the companion AML paper.
+
+## Limitations & honest interpretation
+
+- **Accuracy is at chance.** Do not read ~52% as a working classifier; read it as "this configuration does not yet learn the task."
+- **Severe input compression.** 16×16 grayscale discards most of the morphological signal pathologists rely on.
+- **Simulator-only, few qubits.** `default.qubit` with 8–16 qubits is far from a regime where quantum advantage is expected; no real-hardware runs.
+- **Small data / no error bars.** Single split, `random_state=42`; results are not multi-seed and carry no confidence intervals.
+- This repository is a learning/feasibility artifact, **not** a diagnostic tool.
+
+## Related work & how to cite
+
+This is the white-blood-cell sibling of a more complete, baselined study (CNN, dense, equilibrium propagation, and VQC compared under one protocol):
+
+> A. Bano. *Analyzing Images of Blood Cells with Quantum and Energy-Based Machine Learning Methods.* arXiv:2601.18710.
+
+```bibtex
+@misc{bano_quantum_wbc,
+  author       = {Bano, Azra},
+  title        = {Quantum and Equilibrium-Propagation Models for White Blood Cell Classification},
+  year         = {2026},
+  howpublished = {\url{https://github.com/azrabano23/quantum-white-blood-cell-classification}}
+}
+```
