@@ -48,4 +48,3 @@ python quantum_circuit_visualization.py    # circuit diagrams
 ## License
 
 MIT — see [LICENSE](LICENSE). Author: **Azra Bano**.
-
